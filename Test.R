@@ -1,8 +1,8 @@
 # Collecting Data
 ################################################################################################
 trackll <- createTrackll(interact = T, cores = 5)
-trackll.linked <- linkSkippedFrames(trackl, tolerance = 5, maxSkip = 10, cores = 5)
-
+trackll.linked <- linkSkippedFrames(trackll, tolerance = 5, maxSkip = 10, cores = 5)
+trackl.linked <- trackll.linked[[1]]
 # Filter
 ################################################################################################
 tl <- list()
