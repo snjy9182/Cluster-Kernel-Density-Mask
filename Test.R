@@ -1,7 +1,7 @@
 # Collecting Data
 ################################################################################################
-trackl <- .readDiaSessions(interact = T)
-trackl.linked <- .linkSkippedFrames(trackl, tolerance = 5, maxSkip = 10)
+trackll <- createTrackll(interact = T, cores = 5)
+trackll.linked <- linkSkippedFrames(trackl, tolerance = 5, maxSkip = 10, cores = 5)
 
 # Filter
 ################################################################################################
