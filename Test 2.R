@@ -1,5 +1,4 @@
 trackll <- createTrackll(interact = T, cores = 5)
-trackll.linked <- linkSkippedFrames(trackll, tolerance = 5, maxSkip = 10, cores = 5)
 
 trackl <- trackll.linked[[6]]
 trackl.m <- mergeTrack(trackl)
@@ -7,11 +6,18 @@ trackl.m <- mergeTrack(trackl)
 dens <- calculateKernelDensity(trackl.m)
 cluster.region <- getClusters(trackl.m, dens, num.clusters = 2)
 
+trackl.masked <- clusterMask(trackl, cluster.region)
+trackl.m.masked <- mergeTrack(trackl.masked)
+
 # Merge into one list
 ################################################################################################
 library(dplyr)
 mergeTrack = function(track.list, plot = T){
-  df <- bind_rows(track.list, .id = "Trajectory")[, c("x", "y", "z", "Frame", "Trajectory")]
+  if (length(track.list[[1]]) == 3){
+    df <- bind_rows(track.list, .id = "Trajectory")[, c("x", "y", "z")]
+  } else {
+    df <- bind_rows(track.list, .id = "Trajectory")[, c("x", "y", "z", "Frame")]
+  }
   if (plot){
     plot(df[[1]], df[[2]], xlim = c(0, 128), ylim = c(0, 128), xlab = "x", ylab = "y", cex = .2)
   }
@@ -77,10 +83,10 @@ clusterMask = function (track.list, cluster.region){
   index.mask = 1;
   index = 1;
   for(i in 1:length(track.list)){
-    mask = FALSE;
+    mask = TRUE;
     for (j in 1:nrow(track.list[[i]])){
-      if (cluster.region[[index]] == 0){
-        mask = TRUE;
+      if (cluster.region[[index]] == 1){
+        mask = FALSE;
       }
       index = index + 1;
     }
