@@ -1,13 +1,15 @@
 trackll <- createTrackll(interact = T, cores = 5)
 
-trackl <- trackll.linked[[6]]
+trackl <- trackll[[3]]
 trackl.m <- mergeTrack(trackl)
 
 dens <- calculateKernelDensity(trackl.m)
-cluster.region <- getClusters(trackl.m, dens, num.clusters = 2)
+cluster.region <- getClusters(trackl.m, dens, p = 0.3)
 
 trackl.masked <- clusterMask(trackl, cluster.region)
 trackl.m.masked <- mergeTrack(trackl.masked)
+plotTrackl(trackl.masked)
+
 
 # Merge into one list
 ################################################################################################
@@ -97,3 +99,15 @@ clusterMask = function (track.list, cluster.region){
   }
   return (masked.track.list);
 }
+
+# Plotting trackl
+################################################################################################
+
+
+plotTrackLines = function(track.list){
+  plot(track.list[[3]][[1]], track.list[[3]][[2]], type = "l", xlim = c(0, 128), ylim = c(0, 128))
+  for(i in 4:length(track.list)){
+    lines(track.list[[i]][[1]], track.list[[i]][[2]])
+  }
+}
+
