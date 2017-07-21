@@ -1,4 +1,4 @@
-#### kernelMask.R
+#### maskTrackll.R
 #### Wu Lab, Johns Hopkins University
 #### Author: Sun Jay Yoo
 #### Date: July 21, 2017
