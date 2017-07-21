@@ -25,10 +25,17 @@ kernelDensity = function (track.list){
 
 #Returns binary mask and plots
 
-createMask = function (track.list, kernel.density, p = 0.3, num.clusters = -1, plot = T){
-	
+createMask = function (track.list, kernel.density, p, num.clusters = -1, plot = T){
 	#Store all merged track coordinate points into a dataframe
 	df <- mergeTracks(track.list)
+	
+	if (is.null(p)){
+	  p = -0.1207484 + 0.3468734*(nrow(df)/length(track.list))
+	}
+	
+	if (p <= 0 || p >= 1){
+	  cat("ERROR: Need valid probability (p) or automatic calculation is not valid.")
+	}
 
 	# Calculate contours to plot
 	prob <- c(p)
@@ -83,6 +90,7 @@ createMask = function (track.list, kernel.density, p = 0.3, num.clusters = -1, p
 maskTrackl = function(track.list, mask){
   #Instantiate a masked track list with indexing variables
   masked.track.list = list();
+  masked.track.list.names = list();
   index.mask = 1;
   index = 1;
   
@@ -100,10 +108,10 @@ maskTrackl = function(track.list, mask){
     if (!mask.bool){
       masked.track.list[index.mask] <- track.list[i];
       index.mask = index.mask + 1;
+      masked.track.list.names[1 + length(masked.track.list.names)] = names(track.list[i]);
     }		
   }
-  names(masked.track.list) <- names(track.list)
-  cat("\n", getTrackFileName(track.list), "merged.\n")
+  cat("\n", getTrackFileName(track.list), "masked.\n")
   #Return masked track list
   return (masked.track.list);
 }
@@ -138,7 +146,7 @@ plotTrackLines = function(track.list){
 
 #### kernelMask ####
 
-kernelMask = function (trackll, p = 0.4){
+kernelMask = function (trackll, p = NULL){
   masked.trackll <- list()
   for (i in 1:length(trackll)){
     kd = kernelDensity(trackll[[i]]);
