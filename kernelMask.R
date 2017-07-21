@@ -8,6 +8,8 @@ library(sp) #point.in.polygon
 
 #### kernelDensity ####
 
+#Returns kernel density
+
 kernelDensity = function (track.list){
   
     #Merge track list into a single dataframe
@@ -20,6 +22,8 @@ kernelDensity = function (track.list){
 }
 
 #### createMask ####
+
+#Returns binary mask and plots
 
 createMask = function (track.list, kernel.density, p = 0.3, num.clusters = -1, plot = T){
 	
@@ -65,7 +69,7 @@ createMask = function (track.list, kernel.density, p = 0.3, num.clusters = -1, p
 
 	#Plot with mask and contour
 	if(plot){
-		plot(df[[2]] ~ df[[1]], col=region, data=df, xlim = c(0, 128), ylim = c(0, 128), xlab = "x", ylab = "y", cex = .1)
+		plot(df[[2]] ~ df[[1]], col=region, data=df, xlim = c(0, 128), ylim = c(0, 128), xlab = "x", ylab = "y", main = getTrackFileName(track.list), cex = .1)
 		contour(kernel.density, levels=levels, labels=prob, add=T)
 	}
 
@@ -73,6 +77,8 @@ createMask = function (track.list, kernel.density, p = 0.3, num.clusters = -1, p
 }
 
 #### maskTrackll ####
+
+#Creates masked track list
 
 maskTrackl = function(track.list, mask){
   #Instantiate a masked track list with indexing variables
@@ -96,7 +102,8 @@ maskTrackl = function(track.list, mask){
       index.mask = index.mask + 1;
     }		
   }
-  
+  names(masked.track.list) <- names(track.list)
+  cat("\n", getTrackFileName(track.list), "merged.\n")
   #Return masked track list
   return (masked.track.list);
 }
@@ -117,14 +124,32 @@ mergeTracks = function(track.list){
 
 plotTrackPoints = function(track.list){
   df <- mergeTracks(track.list)
-  plot(df[[1]], df[[2]], xlim = c(0, 128), ylim = c(0, 128), xlab = "x", ylab = "y", cex = .1);
+  plot(df[[1]], df[[2]], xlim = c(0, 128), ylim = c(0, 128), xlab = "x", ylab = "y", main = getTrackFileName(track.list), cex = .1);
 }
 
 #### plotTrackLines ####
 
 plotTrackLines = function(track.list){
-  plot(track.list[[1]][[1]], track.list[[1]][[2]], type = "l", xlim = c(0, 128), ylim = c(0, 128))
+  plot(track.list[[1]][[1]], track.list[[1]][[2]], type = "l", xlim = c(0, 128), ylim = c(0, 128), main = getTrackFileName(track.list))
   for(i in 2:length(track.list)){
     lines(track.list[[i]][[1]], track.list[[i]][[2]])
   }
 }
+
+#### kernelMask ####
+
+kernelMask = function (trackll, p = 0.4){
+  masked.trackll <- list()
+  for (i in 1:length(trackll)){
+    kd = kernelDensity(trackll[[i]]);
+    mask = createMask(trackll[[i]], kd, p = p)
+    masked.trackll[[i]] <- maskTrackl(trackll[[i]], mask)
+  }
+  names(masked.trackll) <- names(trackll)
+  cat("\nAll tracks lists masked.\n")
+  return(masked.trackll)
+}
+
+
+
+
