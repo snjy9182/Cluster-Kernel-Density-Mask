@@ -112,6 +112,7 @@ maskTrackl = function(track.list, mask){
       masked.track.list.names[1 + length(masked.track.list.names)] = names(track.list[i]);
     }		
   }
+  names(masked.track.list) <- masked.track.list.names;
   #Return masked track list
   return (masked.track.list);
 }
@@ -157,7 +158,3 @@ kernelMask = function (trackll, p = NULL){
   cat("\nAll tracks lists masked.\n")
   return(masked.trackll)
 }
-
-
-
-
