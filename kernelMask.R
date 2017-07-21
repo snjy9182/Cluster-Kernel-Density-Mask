@@ -25,7 +25,7 @@ kernelDensity = function (track.list){
 
 #Returns binary mask and plots
 
-createMask = function (track.list, kernel.density, p, num.clusters = -1, plot = T){
+createMask = function (track.list, kernel.density, p = NULL, num.clusters = -1, plot = T){
 	#Store all merged track coordinate points into a dataframe
 	df <- mergeTracks(track.list)
 	
@@ -76,10 +76,11 @@ createMask = function (track.list, kernel.density, p, num.clusters = -1, plot = 
 
 	#Plot with mask and contour
 	if(plot){
-		plot(df[[2]] ~ df[[1]], col=region, data=df, xlim = c(0, 128), ylim = c(0, 128), xlab = "x", ylab = "y", main = getTrackFileName(track.list), cex = .1)
+	  title = paste(getTrackFileName(track.list),"Mask with Kernel Density Probability (p) of", round(p, digits = 3), sep = " ");
+		plot(df[[2]] ~ df[[1]], col=region, data=df, xlim = c(0, 128), ylim = c(0, 128), xlab = "x", ylab = "y", main = title, cex = .1)
 		contour(kernel.density, levels=levels, labels=prob, add=T)
 	}
-
+	cat("\n", getTrackFileName(track.list), "masked at a kernel density probability of", round(p, digits = 3), ".\n")
   return(df$region)
 }
 
@@ -111,7 +112,6 @@ maskTrackl = function(track.list, mask){
       masked.track.list.names[1 + length(masked.track.list.names)] = names(track.list[i]);
     }		
   }
-  cat("\n", getTrackFileName(track.list), "masked.\n")
   #Return masked track list
   return (masked.track.list);
 }
